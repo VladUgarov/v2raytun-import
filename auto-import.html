@@ -16,13 +16,14 @@
   </style>
   <script>
     let configValue = null;
+    let intentUrl = null;
 
     function decodeConfig() {
       const params = new URLSearchParams(window.location.search);
       const raw = params.get("data");
       if (!raw) return null;
 
-      const base64 = raw.replace(/-/g, "+").replace(/_/g, "/"); // base64url → base64
+      const base64 = raw.replace(/-/g, "+").replace(/_/g, "/");
       const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
       try {
         const binary = atob(padded);
@@ -35,22 +36,39 @@
       }
     }
 
+    function buildIntentUrl(link) {
+      const [scheme, rest] = link.split("://", 2);
+      if (!scheme || !rest) return null;
+      const encodedRest = rest.replace(/#/g, encodeURIComponent("#"));
+      return `intent://${encodedRest}#Intent;scheme=${scheme};package=com.v2raytun.android;end`;
+    }
+
     function openApp() {
-      if (!configValue) return;
-      window.location.href = configValue;
+      if (!intentUrl) return;
+      window.location.href = intentUrl;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       configValue = decodeConfig();
       const status = document.getElementById("status");
       const manualBtn = document.getElementById("manual");
+      const directLink = document.getElementById("direct-link");
+
       if (configValue) {
         document.getElementById("placeholder").textContent = configValue;
-        manualBtn.addEventListener("click", openApp);
+        intentUrl = buildIntentUrl(configValue);
+        if (intentUrl) {
+          manualBtn.addEventListener("click", openApp);
+          manualBtn.disabled = false;
+        } else {
+          manualBtn.disabled = true;
+        }
+        directLink.href = configValue;
         status.textContent = "Нажмите кнопку, чтобы открыть v2RayTun.";
       } else {
         status.textContent = "Не удалось получить ключ 😔 Проверьте ссылку или повторите шаг в боте.";
         manualBtn.style.display = "none";
+        directLink.style.display = "none";
       }
     });
   </script>
@@ -60,8 +78,8 @@
     <h1>Импорт VLESS ключа</h1>
     <p id="status">Проверяем ссылку…</p>
 
-    <button id="manual" class="btn" type="button">Открыть в v2RayTun автоматически</button>
-    <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.v2raytun.android">Скачать v2RayTun</a>
+    <button id="manual" class="btn" type="button" disabled>Открыть в v2RayTun автоматически</button>
+    <a id="direct-link" class="btn secondary" href="#" target="_blank" rel="noopener">Открыть ссылку напрямую</a>
 
     <div class="note">
       Если окно не появилось, скопируйте ключ вручную и вставьте в приложении:
