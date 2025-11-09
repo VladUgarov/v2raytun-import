@@ -15,6 +15,8 @@
     .note {margin-top:24px; font-size:14px; color:#687089;}
   </style>
   <script>
+    let configValue = null;
+
     function decodeConfig() {
       const params = new URLSearchParams(window.location.search);
       const raw = params.get("data");
@@ -32,22 +34,19 @@
       }
     }
 
-    function redirectToApp(config) {
-      if (!config) return;
-      setTimeout(() => {
-        window.location.replace(config);
-      }, 800);
+    function openApp() {
+      if (!configValue) return;
+      window.location.href = configValue;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      const config = decodeConfig();
+      configValue = decodeConfig();
       const status = document.getElementById("status");
       const manualBtn = document.getElementById("manual");
-      if (config) {
-        document.getElementById("placeholder").textContent = config;
-        manualBtn.href = config;
-        redirectToApp(config);
-        status.textContent = "Через секунду браузер предложит открыть v2RayTun.";
+      if (configValue) {
+        document.getElementById("placeholder").textContent = configValue;
+        manualBtn.addEventListener("click", openApp);
+        status.textContent = "Нажмите кнопку, чтобы открыть v2RayTun.";
       } else {
         status.textContent = "Не удалось получить ключ 😔 Проверьте ссылку или повторите шаг в боте.";
         manualBtn.style.display = "none";
@@ -60,11 +59,11 @@
     <h1>Импорт VLESS ключа</h1>
     <p id="status">Проверяем ссылку…</p>
 
-    <a id="manual" class="btn" href="#">Открыть в v2RayTun вручную</a>
+    <button id="manual" class="btn" type="button">Открыть в v2RayTun автоматически</button>
     <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.v2raytun.android">Скачать v2RayTun</a>
 
     <div class="note">
-      Если автоматический импорт не сработал, скопируйте ключ и вставьте в приложении:
+      Если окно не появилось, скопируйте ключ вручную и вставьте в приложении:
       <code id="placeholder"></code>
     </div>
   </div>
