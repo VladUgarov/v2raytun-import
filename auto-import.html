@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title>Импорт VPN ключа</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body {font-family: system-ui, sans-serif; background:#f5f7fb; margin:0; padding:32px; color:#111;}
+    .card {max-width:520px; margin:auto; background:#fff; border-radius:20px; padding:32px; box-shadow:0 24px 48px rgba(15,35,95,.12);}
+    h1 {margin-top:0; font-size:28px;}
+    p {line-height:1.6; margin:16px 0;}
+    code {display:block; background:#f2f4ff; border-radius:12px; padding:16px; word-break:break-all; font-size:14px;}
+    .btn {display:inline-block; margin-top:18px; padding:14px 20px; background:#4463ff; color:#fff; border-radius:12px; text-decoration:none; font-weight:600;}
+    .btn.secondary {background:#e4e8ff; color:#2b3674;}
+    .note {margin-top:24px; font-size:14px; color:#687089;}
+  </style>
+  <script>
+    function decodeConfig() {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get("data");
+      if (!raw) return null;
+      const padded = raw + "=".repeat((4 - raw.length % 4) % 4);
+      try { return atob(padded); } catch (e) { console.error(e); return null; }
+    }
+
+    function redirectToApp(config) {
+      if (!config) return;
+      setTimeout(() => {
+        window.location.replace(config);
+      }, 800);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const config = decodeConfig();
+      const status = document.getElementById("status");
+      const manualBtn = document.getElementById("manual");
+      if (config) {
+        document.getElementById("placeholder").textContent = config;
+        manualBtn.href = config;
+        redirectToApp(config);
+        status.textContent = "Через секунду браузер предложит открыть v2RayTun.";
+      } else {
+        status.textContent = "Не удалось получить ключ 😔 Проверьте ссылку или повторите шаг в боте.";
+        manualBtn.style.display = "none";
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="card">
+    <h1>Импорт VLESS ключа</h1>
+    <p id="status">Проверяем ссылку…</p>
+
+    <a id="manual" class="btn" href="#">Открыть в v2RayTun вручную</a>
+    <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.v2raytun.android">Скачать v2RayTun</a>
+
+    <div class="note">
+      Если автоматический импорт не сработал, скопируйте ключ и вставьте в приложении:
+      <code id="placeholder"></code>
+    </div>
+  </div>
+</body>
+</html>
