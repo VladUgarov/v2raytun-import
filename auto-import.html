@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <title>Импорт VPN ключа</title>
+  <title>Импорт VLESS ключа</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     body {font-family: system-ui, sans-serif; background:#f5f7fb; margin:0; padding:32px; color:#111;}
@@ -19,8 +19,17 @@
       const params = new URLSearchParams(window.location.search);
       const raw = params.get("data");
       if (!raw) return null;
+
       const padded = raw + "=".repeat((4 - raw.length % 4) % 4);
-      try { return atob(padded); } catch (e) { console.error(e); return null; }
+      try {
+        const binary = atob(padded);
+        const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+        const decoder = new TextDecoder("utf-8");
+        return decoder.decode(bytes);
+      } catch (e) {
+        console.error("decode error", e);
+        return null;
+      }
     }
 
     function redirectToApp(config) {
