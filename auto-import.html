@@ -25,7 +25,7 @@
       const padded = raw + "=".repeat((4 - raw.length % 4) % 4);
       try {
         const binary = atob(padded);
-        const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+        const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
         const decoder = new TextDecoder("utf-8");
         return decoder.decode(bytes);
       } catch (e) {
@@ -48,24 +48,4 @@
         manualBtn.addEventListener("click", openApp);
         status.textContent = "Нажмите кнопку, чтобы открыть v2RayTun.";
       } else {
-        status.textContent = "Не удалось получить ключ 😔 Проверьте ссылку или повторите шаг в боте.";
-        manualBtn.style.display = "none";
-      }
-    });
-  </script>
-</head>
-<body>
-  <div class="card">
-    <h1>Импорт VLESS ключа</h1>
-    <p id="status">Проверяем ссылку…</p>
-
-    <button id="manual" class="btn" type="button">Открыть в v2RayTun автоматически</button>
-    <a class="btn secondary" href="https://play.google.com/store/apps/details?id=com.v2raytun.android">Скачать v2RayTun</a>
-
-    <div class="note">
-      Если окно не появилось, скопируйте ключ вручную и вставьте в приложении:
-      <code id="placeholder"></code>
-    </div>
-  </div>
-</body>
-</html>
+        status.textContent = "Не удалось получить ключ 😔 Проверьте ссылку или повторите шаг в
